@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
 const app = express();
 // TODO DONE: Don't forget to set your own conString.
-const conString = 'postgres://postgres:postgres@localhost:5432/kilovolt';
+const conString = 'postgres://localhost:5432';
 const client = new pg.Client(conString);
 client.connect();
 client.on('error', error => {
@@ -26,10 +26,11 @@ app.get('/new', (request, response) => {
 // REVIEW: These are routes for making API calls to enact CRUD operations on our database.
 app.get('/articles', (request, response) => {
     // REVIEW: This query will join the data together from our tables and send it back to the client.
-    // TODO: Write a SQL query which joins all data from articles and authors tables on the author_id value of each.
+    // TODONE: Write a SQL query which joins all data from articles and authors tables on the author_id value of each.
     client.query(
-        `
-        
+        `SELECT *
+        FROM authors, articles
+        WHERE articles.author_id = authors.author_id;
         `)
         .then(result => {
             response.send(result.rows);
@@ -40,11 +41,12 @@ app.get('/articles', (request, response) => {
 });
 
 app.post('/articles', (request, response) => {
-    // TODO: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
-    // TODO: In the provided array, add the author and "authorUrl" as data for the SQL query.
+    // TODONE: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
+    // TODONE: In the provided array, add the author and "authorUrl" as data for the SQL query.
+    console.log(request.body);
     client.query(
-        '',
-        [],
+        'INSERT INTO authors (author, "authorUrl") VALUES ($1, $2);',
+        [request.body.author, request.body.authorUrl],
         function(err) {
             if (err) console.error(err);
             // REVIEW: This is our second query, to be executed when this first query is complete.
