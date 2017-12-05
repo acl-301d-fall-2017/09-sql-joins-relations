@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 4000;
 const app = express();
 // TODO: Don't forget to set your own conString.        *******************
-const conString = `postgres://postgres:perezed11@localhost:5432/kilovolt`;
+const conString = `postgres://postgres:1234@localhost:5432/kilovolt`;
 const client = new pg.Client(conString);
 client.connect();
 client.on('error', error => {
@@ -42,9 +42,9 @@ app.post('/articles', (request, response) => {
     // TODO: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
     // TODO: In the provided array, add the author and "authorUrl" as data for the SQL query.
     client.query(`
-        INSERT INTO author(author, authorUrl) VALUES($1, $2)
+        INSERT INTO authors(author, "authorUrl") VALUES($1, $2)
         `,
-        [($('#article-author').value(), $('#article-author-url').value())],
+        [request.body.author, request.body.authorUrl],
         function(err) {
             if (err) console.error(err);
             // REVIEW: This is our second query, to be executed when this first query is complete.
