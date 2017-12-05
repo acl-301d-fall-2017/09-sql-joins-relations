@@ -41,9 +41,10 @@ app.get('/articles', (request, response) => {
 app.post('/articles', (request, response) => {
     // TODO: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
     // TODO: In the provided array, add the author and "authorUrl" as data for the SQL query.
-    client.query(
-        '',
-        [],
+    client.query(`
+        INSERT INTO author(author, authorUrl) VALUES($1, $2)
+        `,
+        [($('#article-author').value(), $('#article-author-url').value())],
         function(err) {
             if (err) console.error(err);
             // REVIEW: This is our second query, to be executed when this first query is complete.
