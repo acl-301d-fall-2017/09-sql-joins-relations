@@ -41,8 +41,8 @@ app.get('/articles', (request, response) => {
 });
 
 app.post('/articles', (request, response) => {
-    // TODO DONE?: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
-    // TODO DONE?: In the provided array, add the author and "authorUrl" as data for the SQL query.
+    // TODO DONE: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
+    // TODO DONE: In the provided array, add the author and "authorUrl" as data for the SQL query.
     client.query(
         'INSERT INTO authors(author) VALUES($1) ON CONFLICT DO NOTHING',
         [request.params.author, request.params.authorUrl],
@@ -54,11 +54,11 @@ app.post('/articles', (request, response) => {
     );
 
     function getNewAuthorId() {
-    // TODO: Write a SQL query to retrieve the author_id from the authors table for the new article.
-    // TODO: In the provided array, add the author name as data for the SQL query.
+    // TODO DONE: Write a SQL query to retrieve the author_id from the authors table for the new article.
+    // TODO DONE?: In the provided array, add the author name as data for the SQL query.
         client.query(
-            ``,
-            [],
+            `SELECT FROM authors(author_id)`,
+            [request.params.author],
             function(err, result) {
                 if (err) console.error(err);
 
