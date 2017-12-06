@@ -46,7 +46,7 @@ app.post('/articles', (request, response) => {
     console.log ("params",request.params);
     console.log("body,", request.body);
     client.query(
-        'INSERT INTO authors(author,"authorUrl") VALUES($1, $2) ON CONFLICT DO NOTHING',
+        `INSERT INTO authors(author,"authorUrl") VALUES($1, $2) ON CONFLICT DO NOTHING`,
         [request.body.author, request.body.authorUrl],
         function(err) {
             if (err) console.error(err);
@@ -71,11 +71,11 @@ app.post('/articles', (request, response) => {
     }
 
     function insertNewArticle(author_id) {
-    // TODO DONE ??: Write a SQL query to insert the new article using the author_id from our previous query.
-    // TODO DONE??: In the provided array, add the data from our new article, including the author_id, as data for the SQL query.
+    // TODO DONE : Write a SQL query to insert the new article using the author_id from our previous query.
+    // TODO DONE: In the provided array, add the data from our new article, including the author_id, as data for the SQL query.
         client.query(
             `INSERT INTO articles(author_id, title, category, "publishedOn", body) VALUES ( $1, $2, $3, $4, $5)`,
-            [request.body.author_id, request.body.title, request.body.category, request.body.publishedOn, request.body.body],
+            [author_id, request.body.title, request.body.category, request.body.publishedOn, request.body.body],
             function(err) {
                 if (err) console.error(err);
                 response.send('insert complete');
