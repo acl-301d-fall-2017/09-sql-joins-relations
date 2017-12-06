@@ -6,9 +6,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
 const app = express();
-// TODO: Don't forget to set your own conString.
-const conString = '';
+
+// TODO DONE: Don't forget to set your own conString.
+const conString = 'postgres://localhost:5432/kilovolt';
 const client = new pg.Client(conString);
+
 client.connect();
 client.on('error', error => {
     console.error(error);
@@ -27,7 +29,11 @@ app.get('/new', (request, response) => {
 app.get('/articles', (request, response) => {
     // REVIEW: This query will join the data together from our tables and send it back to the client.
     // TODO: Write a SQL query which joins all data from articles and authors tables on the author_id value of each.
-    client.query(``)
+    client.query(`SELECT article_id, title, category, publishedOn, body
+    FROM articles
+    INNER JOIN authors
+    ON articles.author_id = authors.author_id
+    ORDER BY publishedOn DESC;`)
         .then(result => {
             response.send(result.rows);
         })
@@ -39,44 +45,45 @@ app.get('/articles', (request, response) => {
 app.post('/articles', (request, response) => {
     // TODO: Write a SQL query to insert a new author, ON CONFLICT DO NOTHING.
     // TODO: In the provided array, add the author and "authorUrl" as data for the SQL query.
+    client.query(`INSERT INTO authors VALUES (author_id, author, authorUrl) 
+        ON CONFLICT DO NOTHING;`),
+    [author, authorUrl],
+    function(err) {
+        if (err) console.error(err);
+        // REVIEW: This is our second query, to be executed when this first query is complete.
+        getNewAuthorId();
+    };
+});
+
+
+function getNewAuthorId() {
+    // TODO: Write a SQL query to retrieve the author_id from the authors table for the new article.
+    // TODO: In the provided array, add the author name as data for the SQL query.
     client.query(
-        '',
+        `SELECT author_id FROM authors
+        INSERT INTO articles VALUE (author_id)`,
+        [author],
+        function(err, result) {
+            if (err) console.error(err);
+
+            // REVIEW: This is our third query, to be executed when the second is complete. We are also passing the author_id into our third query.
+            insertNewArticle(result.rows[0].author_id);
+        }
+    );
+}
+
+function insertNewArticle(author_id) {
+    // TODO: Write a SQL query to insert the new article using the author_id from our previous query.
+    // TODO: In the provided array, add the data from our new article, including the author_id, as data for the SQL query.
+    client.query(
+        ``,
         [],
         function(err) {
             if (err) console.error(err);
-            // REVIEW: This is our second query, to be executed when this first query is complete.
-            getNewAuthorId();
+            response.send('insert complete');
         }
     );
-
-    function getNewAuthorId() {
-    // TODO: Write a SQL query to retrieve the author_id from the authors table for the new article.
-    // TODO: In the provided array, add the author name as data for the SQL query.
-        client.query(
-            ``,
-            [],
-            function(err, result) {
-                if (err) console.error(err);
-
-                // REVIEW: This is our third query, to be executed when the second is complete. We are also passing the author_id into our third query.
-                insertNewArticle(result.rows[0].author_id);
-            }
-        );
-    }
-
-    function insertNewArticle(author_id) {
-    // TODO: Write a SQL query to insert the new article using the author_id from our previous query.
-    // TODO: In the provided array, add the data from our new article, including the author_id, as data for the SQL query.
-        client.query(
-            ``,
-            [],
-            function(err) {
-                if (err) console.error(err);
-                response.send('insert complete');
-            }
-        );
-    }
-});
+}
 
 app.put('/articles/:id', function(request, response) {
     // TODO: Write a SQL query to update an author record. Remember that our articles now have an author_id property, so we can reference it from the request.body.
