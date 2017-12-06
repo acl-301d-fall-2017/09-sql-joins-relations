@@ -56,8 +56,10 @@ app.post('/articles', (request, response) => {
     // TODO: Write a SQL query to retrieve the author_id from the authors table for the new article.
     // TODO: In the provided array, add the author name as data for the SQL query.
         client.query(
-            ``,
-            [],
+            `SELECT author_id 
+            FROM authors
+            WHERE author = $1`,
+            [request.body.author],
             function(err, result) {
                 if (err) console.error(err);
 
@@ -71,8 +73,9 @@ app.post('/articles', (request, response) => {
     // TODO: Write a SQL query to insert the new article using the author_id from our previous query.
     // TODO: In the provided array, add the data from our new article, including the author_id, as data for the SQL query.
         client.query(
-            ``,
-            [],
+            `INSERT INTO articles(author_id, title,category, "publishedOn", body) 
+            VALUES ($1, $2, $3, $4, $5)`,
+            [author_id, request.body.title, request.body.category, request.body.publishedOn, request.body.body],
             function(err) {
                 if (err) console.error(err);
                 response.send('insert complete');
